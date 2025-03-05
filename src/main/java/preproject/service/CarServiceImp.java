@@ -22,12 +22,14 @@ public class CarServiceImp implements CarService {
     public void addCar(Car car) {
         carRepository.save(car);
     }
+
     @Override
     public List<Car> listCarsSort(Pageable pageable) {
         return carRepository.findAll(pageable).getContent();
     }
+
     @Override
-    public List<Car> listCars(){
+    public List<Car> listCars() {
         return carRepository.findAll();
     }
 

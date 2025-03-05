@@ -9,9 +9,11 @@ import java.util.List;
 @ConfigurationProperties(prefix = "sort")
 public class SortConfig {
     private List<String> enabledFields;
+
     public List<String> getEnabledFields() {
         return enabledFields;
     }
+
     public void setEnabledFields(List<String> enabledFields) {
         this.enabledFields = enabledFields;
     }

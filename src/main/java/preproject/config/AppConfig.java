@@ -28,8 +28,10 @@ public class AppConfig {
         dataSource.setPassword(dbPassword);
         return dataSource;
     }
+
     @Value("${spring.maxCar}")
     private int maxCar;
+
     public int getMaxCar() {
         return maxCar;
     }

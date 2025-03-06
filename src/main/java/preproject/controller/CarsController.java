@@ -21,34 +21,20 @@ public class CarsController {
 
     @Autowired
     private CarService carService;
-    @Autowired
-    private SortConfig sortConfig;
 
     @GetMapping
-    public List<Car> listCars(@RequestParam(required = false) Integer count,
-                              @RequestParam(required = false) List<String> sortBy,
-                              Model model) {
-        if (sortBy != null) {
-            for (String field : sortBy) {
-                if (!sortConfig.getEnabledFields().contains(field)) {
-                    throw new IllegalArgumentException("Invalid sort field: " + field);
-                }
-            }
-        }
-        Sort sort = Sort.unsorted();
-        if (sortBy != null && !sortBy.isEmpty()) {
-            Sort.Order[] orders = sortBy.stream()
-                    .map(Sort.Order::asc)
-                    .toArray(Sort.Order[]::new);
-            sort = Sort.by(orders);
-        }
+    public String listCars(@RequestParam(required = false, defaultValue = "0") Integer page,
+                           @RequestParam(required = false) Integer count,
+                           @RequestParam(required = false) List<String> sortBy,
+                           Model model) {
         List<Car> cars;
         if (count != null && count > 0) {
-            cars = carService.listCarsSort(PageRequest.of(0, count, sort));
+            cars = carService.listCarsSort(page, count, sortBy);
         } else {
             cars = carService.listCars();
         }
+
         model.addAttribute("cars", cars);
-        return cars;
+        return "cars";
     }
 }

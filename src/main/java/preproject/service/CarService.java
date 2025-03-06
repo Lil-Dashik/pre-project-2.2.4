@@ -12,5 +12,5 @@ public interface CarService {
 
     List<Car> listCarsByCount(int count);
 
-    List<Car> listCarsSort(Pageable pageable);
+    List<Car> listCarsSort(Integer page, Integer count, List<String> sortBy);
 }

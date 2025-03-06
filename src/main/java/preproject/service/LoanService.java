@@ -26,6 +26,7 @@ public class LoanService {
 
     @Autowired
     private RestTemplate restTemplate;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -51,6 +52,7 @@ public class LoanService {
 
         return Math.max(maxLoanFromIncome, maxLoanFromCar);
     }
+
     private Double getUserIncomeFromApi(Long userId) {
         try {
             ResponseEntity<IncomeResponse[]> response = restTemplate.getForEntity(urlConfig.getIncomes(), IncomeResponse[].class);

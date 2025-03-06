@@ -18,7 +18,7 @@ public class LoanController {
     private LoanService loanService;
 
     @GetMapping
-    public ResponseEntity<Map<String, Double>> getLoanApproval(@RequestParam Long userId){
+    public ResponseEntity<Map<String, Double>> getLoanApproval(@RequestParam Long userId) {
         double approvedLoan = loanService.getApprovedLoan(userId);
         Map<String, Double> response = new HashMap<>();
         response.put("approvedLoan", approvedLoan);

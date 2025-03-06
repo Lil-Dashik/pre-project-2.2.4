@@ -13,14 +13,17 @@ public class Car {
     private String make;
     private String model;
     private int series;
+    private double price;
+
 
     public Car() {
     }
 
-    public Car(String make, String model, int series) {
+    public Car(String make, String model, int series, double price) {
         this.make = make;
         this.model = model;
         this.series = series;
+        this.price = price;
     }
 
     public Long getId() {
@@ -55,8 +58,20 @@ public class Car {
         this.series = series;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     @Override
     public String toString() {
-        return "Car [id=" + id + ", make=" + make + ", model=" + model + ", series=" + series + "]";
+        return "Car [id=" + id + ", make=" + make + ", model=" + model + ", series=" + series + ", price=" + price + "]";
     }
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

@@ -1,7 +1,9 @@
 package preproject.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 @ConfigurationProperties(prefix = "app")
@@ -24,5 +26,10 @@ public class AppConfig {
 
     public void setSort(SortConfig sort) {
         this.sort = sort;
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

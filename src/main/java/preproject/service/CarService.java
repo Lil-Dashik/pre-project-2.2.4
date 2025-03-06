@@ -1,6 +1,5 @@
 package preproject.service;
 
-import org.springframework.data.domain.Pageable;
 import preproject.model.Car;
 
 import java.util.List;

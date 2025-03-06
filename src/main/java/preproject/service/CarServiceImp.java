@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
 import preproject.config.AppConfig;
 import preproject.config.SortConfig;
 import preproject.dao.CarRepository;
@@ -13,7 +11,6 @@ import preproject.model.Car;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CarServiceImp implements CarService {

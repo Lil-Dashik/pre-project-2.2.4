@@ -10,8 +10,6 @@ import preproject.model.User;
 
 @Service
 public class LoanService {
-
-
     private final UserRepository userRepository;
     private final LoanConfig loanConfig;
     private final IncomeService incomeService;

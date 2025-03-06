@@ -1,17 +1,17 @@
 package preproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import preproject.config.LoanConfig;
 import preproject.config.UrlConfig;
 import preproject.dao.UserRepository;
 import preproject.model.Car;
 import preproject.model.IncomeResponse;
 import preproject.model.User;
-import preproject.model.UserIncome;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @Service
 public class LoanService {
+
 
     @Autowired
     private LoanConfig loanConfig;
@@ -28,50 +29,45 @@ public class LoanService {
     @Autowired
     private UserRepository userRepository;
 
-   @Autowired
-   private UrlConfig urlConfig;
+    @Autowired
+    private UrlConfig urlConfig;
 
     public double getApprovedLoan(Long userId) {
-        Optional<Double> optionalUserIncome = getUserIncomeFromApi(userId);
-        if (optionalUserIncome.isEmpty()) {
-            throw new IllegalArgumentException("The user with the ID " + userId + " was not found in the system.");
+        Double userIncome = getUserIncomeFromApi(userId);
+        if (userIncome == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с ID " + userId + " не найден.");
         }
-        double userIncome = optionalUserIncome.get();
-        Optional<User> optionalUser = userRepository.findUserWithCar(userId);
+        Car userCar = userRepository.findUserWithCar(userId)
+                .map(User::getCar)
+                .orElse(null);
 
-        Car userCar = optionalUser.map(User::getCar).orElse(null);
-        double maxLoanFromIncome = 0;
-        double maxLoanFromCar = 0;
+        double maxLoanFromIncome = userIncome >= loanConfig.getMinimalIncome()
+                ? userIncome * 12 * loanConfig.getMaxCreditRateFromIncome()
+                : 0.0;
 
-        if (userIncome >= loanConfig.getMinimalIncome()) {
-            maxLoanFromIncome = userIncome * 12 * loanConfig.getMaxCreditRateFromIncome();
-        }
+        double maxLoanFromCar = (userCar != null && userCar.getPrice() > loanConfig.getMinCarPriceForLoan())
+                ? userCar.getPrice() * loanConfig.getMaxCreditRateFromCarPrice()
+                : 0.0;
 
-        if (userCar != null && userCar.getPrice() > loanConfig.getMinCarPriceForLoan()) {
-            maxLoanFromCar = userCar.getPrice() * loanConfig.getMaxCreditRateFromCarPrice();
-        }
-
-        double approvedLoan = Math.max(maxLoanFromIncome, maxLoanFromCar);
-
-        return approvedLoan > 0 ? approvedLoan : 0;
+        return Math.max(maxLoanFromIncome, maxLoanFromCar);
     }
-    private Optional<Double> getUserIncomeFromApi(Long userId) {
+    private Double getUserIncomeFromApi(Long userId) {
         try {
-            String apiUrl = urlConfig.getIncomes();
-            ResponseEntity<IncomeResponse[]> response = restTemplate.getForEntity(apiUrl, IncomeResponse[].class);
+            ResponseEntity<IncomeResponse[]> response = restTemplate.getForEntity(urlConfig.getIncomes(), IncomeResponse[].class);
             IncomeResponse[] incomes = response.getBody();
-
             if (incomes == null || incomes.length == 0) {
-                return Optional.empty();
+                return null;
             }
-
-            return Arrays.stream(incomes)
+            return Optional.ofNullable(response.getBody())
+                    .stream()
+                    .flatMap(Arrays::stream)
                     .filter(i -> Objects.equals(i.getId(), userId))
                     .map(IncomeResponse::getIncome)
-                    .findFirst();
+                    .findFirst()
+                    .orElse(null);
         } catch (Exception e) {
-            System.out.println(" Error when receiving user income: " + e.getMessage());
-            return Optional.empty();
+            System.out.println("Error when receiving income: " + e.getMessage());
+            return 0.0;
         }
     }
 }

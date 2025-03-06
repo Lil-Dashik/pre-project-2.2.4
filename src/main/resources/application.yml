@@ -15,15 +15,6 @@ spring:
         id:
           new_generator_mappings: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  maxCar: 100
-  thymeleaf:
-    check-template-location: false
-sort:
-  enabled-fields:
-    - make
-    - model
-    - series
-    - price
 loan:
   minimalIncome: 40000
   maxCreditRateFromIncome: 0.5

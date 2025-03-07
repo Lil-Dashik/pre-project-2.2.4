@@ -1,8 +1,9 @@
 package preproject.model;
 
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
+
 
 
 @Getter

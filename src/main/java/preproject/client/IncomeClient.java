@@ -3,6 +3,7 @@ package preproject.client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import preproject.config.UrlConfig;
 import preproject.model.IncomeResponse;
@@ -15,16 +16,19 @@ public class IncomeClient {
 
     public IncomeResponse[] fetchIncomes() {
         try {
-            String url = urlConfig.getIncomes();
-            ResponseEntity<IncomeResponse[]> response = restTemplate.getForEntity(url, IncomeResponse[].class);
+            String apiUrl = urlConfig.getIncomes();
+            ResponseEntity<IncomeResponse[]> response = restTemplate.getForEntity(apiUrl, IncomeResponse[].class);
+            if (response.getStatusCode().isError()) {
+                throw new IllegalStateException("Error: The API returned the status " + response.getStatusCode());
+            }
             IncomeResponse[] incomes = response.getBody();
-            if (incomes == null || incomes.length == 0) {
-                return null;
+            if (incomes == null) {
+                throw new IllegalStateException("Error: The API returned null instead of an array of revenue!");
             }
             return incomes;
-        } catch (Exception e) {
-            System.out.println("Error when receiving income:" + e.getMessage());
-            return new IncomeResponse[0];
+        } catch (RestClientException e) {
+            System.out.println(" Network error: " + e.getMessage());
+            throw e;
         }
     }
 }

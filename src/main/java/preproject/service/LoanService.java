@@ -1,25 +1,19 @@
 package preproject.service;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import preproject.config.LoanConfig;
 import preproject.dao.UserRepository;
 import preproject.model.Car;
 import preproject.model.User;
 
+@RequiredArgsConstructor
 @Service
 public class LoanService {
     private final UserRepository userRepository;
     private final LoanConfig loanConfig;
     private final IncomeService incomeService;
-
-    @Autowired
-    public LoanService(UserRepository userRepository, LoanConfig loanConfig, IncomeService incomeService) {
-        this.userRepository = userRepository;
-        this.loanConfig = loanConfig;
-        this.incomeService = incomeService;
-    }
 
     public double getApprovedLoan(Long userId) {
         double userIncome = incomeService.getUserIncome(userId);
